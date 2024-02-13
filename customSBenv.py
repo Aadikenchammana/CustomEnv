@@ -108,12 +108,13 @@ class CustomEnv(gym.Env):
         
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
         self.screen_size = self.config.area.screen_size[0]
-        self.agent_x = 30
-        self.agent_y = 30
-        self.agent_start = [30,30]
+        self.agent_x = 10
+        self.agent_y = 10
+        self.agent_start = [10,10]
         self.episode_steps = 0
         self.updates_per_step = 1
-        self.total_steps_per_episode = 100
+        self.total_steps_per_episode = 200
+        self.fire_restart_threshold = 300
         self.chkpt_thresh = 20
         self.episode_num = 0
 
@@ -143,7 +144,7 @@ class CustomEnv(gym.Env):
     def step(self, action):
         self.episode_steps += 1
         action_str = self.action_names[action]
-        action_multiplier = 2
+        action_multiplier = 3
 
         with open(self.analytics_dir+"//customLog.txt","a") as f:
             f.write("\n ACTION PREFORMED, "+action_str+","+str(self.agent_x)+","+str(self.agent_y))
@@ -198,7 +199,8 @@ class CustomEnv(gym.Env):
             self.chkpt_flag = True
             self.chkpt_dir = self.analytics_dir+"//fires//"+str(int(self.episode_num/self.chkpt_thresh))
             os.mkdir(self.chkpt_dir)
-        self.config.fire.fire_initial_position = calc_random_start(self.config.area.screen_size[0])
+        if self.episode_num%self.fire_restart_threshold == 0:
+            self.config.fire.fire_initial_position = calc_random_start(self.config.area.screen_size[0])
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
         self.sim.reset()
         self.fire_map, self.fire_status = run_one_simulation_step(self, 1)
