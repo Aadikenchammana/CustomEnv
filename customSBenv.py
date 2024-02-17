@@ -122,7 +122,7 @@ class CustomEnv(gym.Env):
         self.episode_steps = 0
         self.updates_per_step = 1
         self.total_steps_per_episode = 300
-        self.episodes_per_fire_restart = 15000000000
+        self.episodes_per_fire_restart = 400
         self.chkpt_thresh = 100
         self.simulation_steps_per_timestep = 8
         self.episode_num = 0
@@ -260,7 +260,7 @@ if False:
 model = PPO('MlpPolicy', env, verbose=1)
 
 # Train the agent and display a progress bar
-model.learn(total_timesteps=int(2e5), progress_bar=True)
+model.learn(total_timesteps=int(8e6), progress_bar=True)
 # Save the agent
 model.save("dqn_lunar")
 del model
