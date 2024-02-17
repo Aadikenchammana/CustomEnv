@@ -123,7 +123,7 @@ class CustomEnv(gym.Env):
         self.updates_per_step = 1
         self.total_steps_per_episode = 300
         self.episodes_per_fire_restart = 150
-        self.chkpt_thresh = 20
+        self.chkpt_thresh = 100
         self.simulation_steps_per_timestep = 8
         self.episode_num = 0
         self.autoplace = True
@@ -256,9 +256,8 @@ if False:
     check_env(env)
     quit()
 # Instantiate the agent
-#model = DQN("MlpPolicy", env, verbose=1)
-
-model = PPO('MlpPolicy', env, verbose=1)
+model = DQN("MlpPolicy", env, verbose=1)
+#model = PPO('MlpPolicy', env, verbose=1)
 
 # Train the agent and display a progress bar
 model.learn(total_timesteps=int(8e5), progress_bar=True)
