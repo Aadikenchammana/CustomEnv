@@ -58,7 +58,8 @@ def get_reward(mp):
     return -10*(burning+burned)/(burning+burned+unburned)
 
 def get_reward_l2(mp, x, y):
-    dist, square = distance_to_fire(mp,x,y) - 2
+    dist, square = distance_to_fire(mp,x,y)
+    dist -= 2
     return -10*(get_burning(mp)+get_burned(mp))/get_total(mp) - 0.5*dist
 
 def run_one_simulation_step(self, total_updates):
