@@ -58,7 +58,7 @@ def get_reward(mp):
     return -10*(burning+burned)/(burning+burned+unburned)
 
 def get_reward_l2(mp, x, y):
-    dist, square = distance_to_fire(mp,x,y)
+    dist, square = distance_to_fire(mp,x,y) - 2
     return -10*(get_burning(mp)+get_burned(mp))/get_total(mp) - 0.5*dist
 
 def run_one_simulation_step(self, total_updates):
@@ -99,6 +99,9 @@ def distance_to_fire(mp,x,y):
     if flag:
         return 0,[0,0]
     return mn, closest_square
+
+def square_state(mp, x, y):
+    return mp[y][x]
 
 class CustomEnv(gym.Env):
     """Custom Environment that follows gym interface."""
@@ -174,13 +177,13 @@ class CustomEnv(gym.Env):
             self.agent_x +=1*action_multiplier
         
         if self.agent_x > self.screen_size-1:
-            self.agent_x = self.agent_start[0]
+            self.agent_x = self.screen_size-1 #self.agent_start[0]
         if self.agent_y > self.screen_size-1:
-            self.agent_y = self.agent_start[1]
+            self.agent_y = self.screen_size-1 #self.agent_start[1]
         if self.agent_x < 0:
-            self.agent_x = self.agent_start[0]
+            self.agent_x = 0 #self.agent_start[0]
         if self.agent_y < 0:
-            self.agent_y = self.agent_start[1]
+            self.agent_y = 0 #self.agent_start[1]
         
         if action_str == "fireline":
             self.sim.update_mitigation([(self.agent_x,self.agent_y,BurnStatus.FIRELINE)])
@@ -201,6 +204,8 @@ class CustomEnv(gym.Env):
             terminated = True
             truncated = False
         reward = get_reward_l2(self.fire_map, self.agent_x, self.agent_y)#get_reward(self.fire_map)
+        if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
+            reward -= 10
 
         with open(self.analytics_dir+"//customLog.txt","a") as f:
             f.write("\n REWARD CALCULATED, "+str(reward)+","+str(get_burned(self.fire_map))+","+str(get_burning(self.fire_map))+","+str(get_unburned(self.fire_map)))
