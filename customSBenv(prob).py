@@ -10,6 +10,7 @@ import random
 import os
 from datetime import datetime
 import math
+import copy
 
 def save_array_to_file(array, filename):
 
@@ -57,9 +58,11 @@ def get_reward(mp):
 
     return -10*(burning+burned)/(burning+burned+unburned)
 
-def get_reward_l2(mp, x, y):
-    dist, square = distance_to_fire(mp,x,y)
-    dist -= 2
+def get_reward_l2(mp,pmp, x, y, target="fire"):
+    if target == "fire":
+        dist, square = distance_to_fire(mp,x,y)
+    if target == "prob":
+        dist, square = distance_to_prob(pmp, x, y, 0.5)
     return -10*(get_burning(mp)+get_burned(mp))/get_total(mp) - 0.5*dist
 
 def run_one_simulation_step(self, total_updates):
@@ -101,6 +104,46 @@ def distance_to_fire(mp,x,y):
         return 0,[0,0]
     return mn, closest_square
 
+def distance_to_prob(mp,x,y, target):
+    i = -1
+    mn = 2*int(mp.shape[1])
+    closest_square = []
+    flag = True
+    for row in mp:
+        i+=1
+        j = -1
+        for item in row:
+            j+=1
+            if item == target and np.sqrt((x-i)**2+(y-j)**2) < mn:
+                flag = False
+                mn = np.sqrt((x-i)**2+(y-j)**2)
+                closest_square = [i,j]
+    if flag:
+        return 0,[0,0]
+    return mn, closest_square
+
+def simple_expansion(fire_map):
+    rows, cols = fire_map.shape
+    new_map = copy.deepcopy(fire_map)
+    for row in range(rows):
+        for col in range(cols):
+            if fire_map[row, col] == 1:
+                for i in range(max(0, row - 1), min(row + 2, rows)):
+                    for j in range(max(0, col - 1), min(col + 2, cols)):
+                        if fire_map[i, j] == 0:
+                            new_map[i, j] = 1
+    return new_map
+
+
+def generate_probabilities(self, steps):
+    past_map = self.fire_map
+    prob_map = np.zeros_like(past_map)
+    for step in range(steps):
+        new_map = simple_expansion(past_map)
+        prob_map[(past_map == 0) & (new_map == 1)] = 1/(step+1)
+        past_map = new_map
+    return prob_map
+
 def square_state(mp, x, y):
     return mp[y][x]
 
@@ -120,6 +163,7 @@ class CustomEnv(gym.Env):
         
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
         self.screen_size = self.config.area.screen_size[0]
+        self.prob_map = np.zeros_like(self.sim.fire_map)
         self.agent_x = 10
         self.agent_y = 10
         self.agent_start = [10,10]
@@ -157,7 +201,7 @@ class CustomEnv(gym.Env):
             n_actions = 5
             self.action_space = spaces.Discrete(n_actions)
             self.action_names = ["up","down","left","right","fireline"]
-        n_channel = 1
+        n_channel = 2
         self.observation_space = spaces.Box(low=0, high=255,shape=(n_channel, self.screen_size, self.screen_size), dtype=np.int64)
 
 
@@ -194,9 +238,11 @@ class CustomEnv(gym.Env):
 
         if self.episode_steps%self.simulation_steps_per_timestep == 0:
             self.fire_map, self.fire_status = run_one_simulation_step(self, self.updates_per_step)
+        self.prob_map = generate_probabilities(self,5)
 
 
-        self.observation = self.fire_map[newaxis,:,:]
+        observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
+        self.observation = observation_map[newaxis,:,:]
         terminated = False
         truncated = False
         if self.episode_steps > self.total_steps_per_episode:
@@ -204,9 +250,9 @@ class CustomEnv(gym.Env):
         if get_burning(self.fire_map) == 0:
             terminated = True
             truncated = False
-        reward = get_reward_l2(self.fire_map, self.agent_x, self.agent_y)#get_reward(self.fire_map)
+        reward = get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
         if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
-            reward -= 10
+            reward -= 5
 
         with open(self.analytics_dir+"//customLog.txt","a") as f:
             f.write("\n REWARD CALCULATED, "+str(reward)+","+str(get_burned(self.fire_map))+","+str(get_burning(self.fire_map))+","+str(get_unburned(self.fire_map)))
@@ -232,8 +278,10 @@ class CustomEnv(gym.Env):
             self.config.fire.fire_initial_position = calc_random_start(self.config.area.screen_size[0])
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
         self.sim.reset()
-        self.fire_map, self.fire_status = run_one_simulation_step(self, 1)
-        self.observation_return = self.fire_map[newaxis,:,:]
+        self.fire_map, self.fire_status = run_one_simulation_step(self, 0)
+        self.prob_map = np.zeros_like(self.fire_map)
+        observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
+        self.observation_return = observation_map[newaxis,:,:]
         self.episode_steps = 0
         self.agent_x = self.agent_start[0]
         self.agent_y = self.agent_start[1]
@@ -245,8 +293,7 @@ class CustomEnv(gym.Env):
 
         info = {}
         return self.observation_return, info
-
-
+    
 
     def render(self):
         ...
