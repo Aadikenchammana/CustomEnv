@@ -84,6 +84,7 @@ def run_one_simulation_step(self, total_updates):
     return self.sim.fire_map, self.sim.active
 
 def calc_random_start(screen_size):
+    return 25, 25
     return(random.randint(0,screen_size-1),random.randint(0,screen_size-1))
 
 def distance_to_fire(mp,x,y):
@@ -171,7 +172,7 @@ class CustomEnv(gym.Env):
         self.updates_per_step = 1
         self.total_steps_per_episode = 1200
         self.episodes_per_fire_restart = 2500
-        self.chkpt_thresh = 100
+        self.chkpt_thresh = 400
         self.simulation_steps_per_timestep = 8
         self.episode_num = 0
         self.autoplace = True
