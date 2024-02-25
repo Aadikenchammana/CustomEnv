@@ -72,7 +72,7 @@ def get_reward_l2(mp,pmp, x, y, target="fire"):
     if target == "prob":
         dist, square = distance_to_prob(pmp, x, y, 0.5)
 
-    return -10*(get_burning(mp)+get_burned(mp))/get_total(mp) - 0.5*dist - 0.05*get_mitigated(mp)
+    return -10*(get_burning(mp)+get_burned(mp))/get_total(mp) - 0.5*dist
 
 def run_one_simulation_step(self, total_updates):
     num_updates = 0
@@ -183,7 +183,7 @@ class CustomEnv(gym.Env):
         self.chkpt_thresh = 400
         self.simulation_steps_per_timestep = 8
         self.episode_num = 0
-        self.autoplace = True
+        self.autoplace = False
 
         self.analytics_dir = "train_analytics//"+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
         if os.path.isdir(self.analytics_dir) == False:
