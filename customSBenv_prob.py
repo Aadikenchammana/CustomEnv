@@ -43,7 +43,15 @@ def get_unburned(mp):
         for item in row:
             if item == 0:
                 count +=1
-    return count    
+    return count   
+ 
+def get_mitigated(mp):
+    count = 0
+    for row in mp:
+        for item in row:
+            if item == 3:
+                count +=1
+    return count 
 
 def get_total(mp):
     burning = get_burning(mp)
@@ -63,7 +71,8 @@ def get_reward_l2(mp,pmp, x, y, target="fire"):
         dist, square = distance_to_fire(mp,x,y)
     if target == "prob":
         dist, square = distance_to_prob(pmp, x, y, 0.5)
-    return -10*(get_burning(mp)+get_burned(mp))/get_total(mp) - 0.5*dist
+
+    return -10*(get_burning(mp)+get_burned(mp))/get_total(mp) - 0.5*dist - 0.05*get_mitigated(mp)
 
 def run_one_simulation_step(self, total_updates):
     num_updates = 0
@@ -84,7 +93,6 @@ def run_one_simulation_step(self, total_updates):
     return self.sim.fire_map, self.sim.active
 
 def calc_random_start(screen_size):
-    return 25, 25
     return(random.randint(0,screen_size-1),random.randint(0,screen_size-1))
 
 def distance_to_fire(mp,x,y):
