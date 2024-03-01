@@ -156,6 +156,33 @@ def generate_probabilities(self, steps):
 def square_state(mp, x, y):
     return mp[y][x]
 
+def combine_arrays(arr1, arr2):
+    if arr1.shape != arr2.shape:
+        raise ValueError("arr1 and arr2 must have the same shape")
+    result = np.where(arr1 == 0, arr2, arr1)
+    return result
+
+def numbers_to_rgb(array):
+    unique_values = np.unique(array)
+    np.random.seed(0)
+    color_map = {value: np.random.randint(0, 256, 3) for value in unique_values}
+    rgb_image = np.zeros((*array.shape, 3), dtype=np.uint8)
+    for value in unique_values:
+        rgb_image[array == value] = color_map[value]
+    if rgb_image.shape[0] == 1:
+        rgb_image = rgb_image.squeeze(axis=0) 
+    
+    return rgb_image
+
+def upscale_array(arr):
+    n, _, _ = arr.shape
+    upscaled_arr = np.zeros((2 * n, 2 * n, 3), dtype=arr.dtype)
+    for i in range(n):
+        for j in range(n):
+            upscaled_arr[2 * i:2 * i + 2, 2 * j:2 * j + 2] = arr[i, j]
+    
+    return upscaled_arr
+
 class CustomEnv(gym.Env):
     """Custom Environment that follows gym interface."""
 
@@ -210,8 +237,8 @@ class CustomEnv(gym.Env):
             n_actions = 5
             self.action_space = spaces.Discrete(n_actions)
             self.action_names = ["up","down","left","right","fireline"]
-        n_channel = 2
-        self.observation_space = spaces.Box(low=0, high=255,shape=(n_channel, self.screen_size, self.screen_size), dtype=np.int64)
+        n_channel = 3
+        self.observation_space = spaces.Box(low=0, high=255,shape=(self.screen_size*2, self.screen_size*2,n_channel), dtype=np.uint8)
 
 
     def step(self, action):
@@ -250,8 +277,9 @@ class CustomEnv(gym.Env):
         self.prob_map = generate_probabilities(self,5)
 
 
-        observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
-        self.observation = observation_map[newaxis,:,:]
+        self.observation = combine_arrays(self.fire_map, self.prob_map)[newaxis,:,:]
+        self.observation = numbers_to_rgb(self.observation)
+        self.observation = upscale_array(self.observation)
         terminated = False
         truncated = False
         if self.episode_steps > self.total_steps_per_episode:
@@ -289,8 +317,9 @@ class CustomEnv(gym.Env):
         self.sim.reset()
         self.fire_map, self.fire_status = run_one_simulation_step(self, 0)
         self.prob_map = np.zeros_like(self.fire_map)
-        observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
-        self.observation_return = observation_map[newaxis,:,:]
+        self.observation_return = combine_arrays(self.fire_map, self.prob_map)[newaxis,:,:]
+        self.observation_return = numbers_to_rgb(self.observation_return)
+        self.observation_return = upscale_array(self.observation_return)
         self.episode_steps = 0
         self.agent_x = self.agent_start[0]
         self.agent_y = self.agent_start[1]
