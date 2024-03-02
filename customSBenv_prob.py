@@ -224,7 +224,7 @@ class CustomEnv(gym.Env):
         self.total_steps_per_episode = 1200
         self.episodes_per_fire_restart = 2500
         self.chkpt_thresh = 400
-        self.simulation_steps_per_timestep = 8
+        self.simulation_steps_per_timestep = 16
         self.episode_num = 0
         self.autoplace = False
 
