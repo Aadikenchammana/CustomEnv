@@ -166,7 +166,7 @@ def numbers_to_rgb(array):
     unique_values = np.unique(array)
     np.random.seed(0)
     color_map = {value: np.random.randint(0, 256, 3) for value in unique_values}
-    rgb_image = np.zeros((*array.shape, 3), dtype=np.int64)
+    rgb_image = np.zeros((*array.shape, 3), dtype=np.uint8)
     for value in unique_values:
         rgb_image[array == value] = color_map[value]
     if rgb_image.shape[0] == 1:
@@ -238,7 +238,7 @@ class CustomEnv(gym.Env):
             self.action_space = spaces.Discrete(n_actions)
             self.action_names = ["up","down","left","right","fireline"]
         n_channel = 3
-        self.observation_space = spaces.Box(low=0, high=255,shape=(self.screen_size*2, self.screen_size*2,n_channel), dtype=np.int64)
+        self.observation_space = spaces.Box(low=0, high=255,shape=(self.screen_size*2, self.screen_size*2,n_channel), dtype=np.uint8)
 
 
     def step(self, action):
