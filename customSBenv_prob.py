@@ -74,23 +74,44 @@ def get_reward_l2(mp,pmp, x, y, target="fire"):
 
     return -10*(get_burning(mp)+get_burned(mp))/get_total(mp) - 0.5*dist
 
-def get_reward_l2_acc(self, target="fire"):
+
+def get_reward_l2_acc(self, target="fire", atarget = "fire"):
     if target == "fire":
         dist, square = distance_to_fire(self.fire_map,self.agent_x,self.agent_y)
     if target == "prob":
         dist, square = distance_to_prob(self.prob_map, self.agent_x, self.agent_y, 0.5)
+    if atarget == "fire":
+        p1 = (get_burned(self.prev_map3)+get_burning(self.prev_map3))
+        p2 = (get_burned(self.prev_map2)+get_burning(self.prev_map2))
+        p3 = (get_burned(self.prev_map)+get_burning(self.prev_map))
+        p4 = (get_burned(self.fire_map)+get_burning(self.fire_map))
 
-    p1 = (get_burned(self.prev_map3)+get_burning(self.prev_map3))
-    p2 = (get_burned(self.prev_map2)+get_burning(self.prev_map2))
-    p3 = (get_burned(self.prev_map)+get_burning(self.prev_map))
-    p4 = (get_burned(self.fire_map)+get_burning(self.fire_map))
+        v1 = (p2 - p1)/p1
+        v2 = (p3 - p2)/p2
+        v3 = (p4 - p3)/p3
 
-    v1 = (p2 - p1)/p1
-    v2 = (p3 - p2)/p2
-    v3 = (p4 - p3)/p3
+        a1 = v2 - v1
+        a2 = v3 - v2
+    elif atarget == "prob":
+        p1 = np.sum(self.prev_prob3)
+        p2 = np.sum(self.prev_prob2)
+        p3 = np.sum(self.prev_prob)
+        p4 = np.sum(self.prob_map)
 
-    a1 = v2 - v1
-    a2 = v3 - v2
+        v1 = (p2 - p1)/p1
+        v2 = (p3 - p2)/p2
+        v3 = (p4 - p3)/p3
+
+        if p1 == 0:
+            v1 = 0
+        if p2 == 0:
+            v2 = 0
+        if p3 == 0:
+            v3 = 0
+
+        a1 = v2 - v1
+        a2 = v3 - v2
+
     return -10*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 0.5*dist - 10*(a2 - a1)
     
 
@@ -205,11 +226,15 @@ class CustomEnv(gym.Env):
         self.chkpt_thresh = 400
         self.simulation_steps_per_timestep = 8
         self.episode_num = 0
-        self.autoplace = False
+        self.autoplace = True
 
         self.prev_map = copy.deepcopy(self.fire_map)
         self.prev_map2 = copy.deepcopy(self.fire_map)
         self.prev_map3 = copy.deepcopy(self.fire_map)
+        #---
+        self.prev_prob = copy.deepcopy(self.prob_map)
+        self.prev_prob2 = copy.deepcopy(self.prob_map)
+        self.prev_prob3 = copy.deepcopy(self.prob_map)
 
         self.analytics_dir = "train_analytics//"+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
         if os.path.isdir(self.analytics_dir) == False:
@@ -285,7 +310,7 @@ class CustomEnv(gym.Env):
         if get_burning(self.fire_map) == 0:
             terminated = True
             truncated = False
-        reward = get_reward_l2_acc(self, target="prob")#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
+        reward = get_reward_l2_acc(self, target="prob", atarget="prob")#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
         if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
             reward -= 5
 
@@ -302,6 +327,9 @@ class CustomEnv(gym.Env):
             self.prev_map3 = copy.deepcopy(self.prev_map2)
             self.prev_map2 = copy.deepcopy(self.prev_map)
             self.prev_map = copy.deepcopy(self.fire_map)
+        self.prev_prob3 = copy.deepcopy(self.prev_prob2)
+        self.prev_prob2 = copy.deepcopy(self.prev_prob)
+        self.prev_prob = copy.deepcopy(self.prob_map)
         info = {}
         return self.observation, reward, terminated, truncated, info
 
@@ -327,6 +355,10 @@ class CustomEnv(gym.Env):
         self.prev_map = self.fire_map
         self.prev_map2 = self.fire_map
         self.prev_map3 = self.fire_map
+        #---
+        self.prev_prob = copy.deepcopy(self.prob_map)
+        self.prev_prob2 = copy.deepcopy(self.prob_map)
+        self.prev_prob3 = copy.deepcopy(self.prob_map)
 
         with open(self.analytics_dir+"//customLog.txt","a") as f:
             f.write("\n NEW TRAINING ITERATION CREATION")
