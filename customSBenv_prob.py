@@ -112,7 +112,7 @@ def get_reward_l2_acc(self, target="fire", atarget = "fire"):
         a1 = v2 - v1
         a2 = v3 - v2
 
-    return -10*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 0.5*dist - 10*(a2 - a1)
+    return -10*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 0.5*dist - 10*(v3)
     
 
 def run_one_simulation_step(self, total_updates):
