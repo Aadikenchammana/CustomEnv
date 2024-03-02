@@ -166,7 +166,7 @@ def numbers_to_rgb(array):
     unique_values = np.unique(array)
     np.random.seed(0)
     color_map = {value: np.random.randint(0, 256, 3) for value in unique_values}
-    rgb_image = np.zeros((*array.shape, 3), dtype=np.uint8)
+    rgb_image = np.zeros((*array.shape, 3), dtype=np.int64)
     for value in unique_values:
         rgb_image[array == value] = color_map[value]
     if rgb_image.shape[0] == 1:
