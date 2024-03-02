@@ -238,7 +238,7 @@ class CustomEnv(gym.Env):
             self.action_space = spaces.Discrete(n_actions)
             self.action_names = ["up","down","left","right","fireline"]
         n_channel = 3
-        self.observation_space = spaces.Box(low=0, high=255,shape=(self.screen_size*2, self.screen_size*2,n_channel), dtype=np.uint8)
+        self.observation_space = spaces.Box(low=0, high=255,shape=(self.screen_size*2, self.screen_size*2,n_channel), dtype=np.int64)
 
 
     def step(self, action):
