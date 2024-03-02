@@ -91,7 +91,6 @@ def get_reward_l2_acc(self, target="fire"):
 
     a1 = v2 - v1
     a2 = v3 - v2
-
     return -10*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 0.5*dist - 10*(a2 - a1)
     
 
@@ -208,9 +207,9 @@ class CustomEnv(gym.Env):
         self.episode_num = 0
         self.autoplace = True
 
-        self.prev_map = self.fire_map
-        self.prev_map2 = self.fire_map
-        self.prev_map3 = self.fire_map
+        self.prev_map = copy.deepcopy(self.fire_map)
+        self.prev_map2 = copy.deepcopy(self.fire_map)
+        self.prev_map3 = copy.deepcopy(self.fire_map)
 
         self.analytics_dir = "train_analytics//"+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
         if os.path.isdir(self.analytics_dir) == False:
@@ -299,10 +298,10 @@ class CustomEnv(gym.Env):
         if self.chkpt_flag:
             #save_array_to_file(self.fire_map, self.chkpt_dir+"//"+str(self.episode_steps)+".txt")
             np.save(self.chkpt_dir+"//"+str(self.episode_steps)+".npy",self.fire_map)
-
-        self.prev_map3 = self.prev_map2
-        self.prev_map2 = self.prev_map
-        self.prev_map = self.fire_map
+        if self.episode_steps%self.simulation_steps_per_timestep == 0:
+            self.prev_map3 = copy.deepcopy(self.prev_map2)
+            self.prev_map2 = copy.deepcopy(self.prev_map)
+            self.prev_map = copy.deepcopy(self.fire_map)
         info = {}
         return self.observation, reward, terminated, truncated, info
 
@@ -324,7 +323,7 @@ class CustomEnv(gym.Env):
         self.episode_steps = 0
         self.agent_x = self.agent_start[0]
         self.agent_y = self.agent_start[1]
-
+    
         self.prev_map = self.fire_map
         self.prev_map2 = self.fire_map
         self.prev_map3 = self.fire_map
