@@ -226,7 +226,7 @@ class CustomEnv(gym.Env):
         self.chkpt_thresh = 400
         self.simulation_steps_per_timestep = 8
         self.episode_num = 0
-        self.autoplace = True
+        self.autoplace = False
 
         self.prev_map = copy.deepcopy(self.fire_map)
         self.prev_map2 = copy.deepcopy(self.fire_map)
