@@ -112,7 +112,7 @@ def get_reward_l2_acc(self, target="fire", atarget = "fire"):
         a1 = v2 - v1
         a2 = v3 - v2
 
-    return -10*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 0.5*dist - 10*(v3)
+    return -10*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 0.2*dist - 10*(v3)
     
 
 def run_one_simulation_step(self, total_updates):
@@ -313,6 +313,11 @@ class CustomEnv(gym.Env):
         reward = get_reward_l2_acc(self, target="prob", atarget="prob")#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
         if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
             reward -= 5
+        if action_str == "fireline":
+            if self.prob_map[self.agent_y][self.agent_x] != 0:
+                reward += 5
+            else:
+                reward -=1
 
         with open(self.analytics_dir+"//customLog.txt","a") as f:
             f.write("\n REWARD CALCULATED, "+str(reward)+","+str(get_burned(self.fire_map))+","+str(get_burning(self.fire_map))+","+str(get_unburned(self.fire_map)))
