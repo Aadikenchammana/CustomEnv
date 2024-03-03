@@ -115,7 +115,7 @@ def get_reward_l2_acc(self, target="fire", atarget = "fire"):
 
     return -10*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 2*dist - 10*(v3)
 
-def get_reward_l2_test(self, target="fire", atarget = "fire"):
+def get_reward_l2_acc_test(self, target="fire", atarget = "fire"):
     if target == "fire":
         dist, square = distance_to_fire(self.fire_map,self.agent_x,self.agent_y)
     if target == "prob":
@@ -382,7 +382,7 @@ class CustomEnv(gym.Env):
             terminated = True
             truncated = True
         
-        reward = get_reward_l2_acc(self, target="prob", atarget="prob")#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
+        reward = get_reward_l2_acc_test(self, target="prob", atarget="prob")#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
         if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
             reward -= 5
         elif square_state(self.fire_map, self.agent_x,self.agent_y) == 2:
