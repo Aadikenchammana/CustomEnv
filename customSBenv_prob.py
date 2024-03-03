@@ -114,6 +114,45 @@ def get_reward_l2_acc(self, target="fire", atarget = "fire"):
         a2 = v3 - v2
 
     return -10*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 2*dist - 10*(v3)
+
+def get_reward_l2_test(self, target="fire", atarget = "fire"):
+    if target == "fire":
+        dist, square = distance_to_fire(self.fire_map,self.agent_x,self.agent_y)
+    if target == "prob":
+        dist, square = distance_to_prob(self.prob_map, self.agent_x, self.agent_y, 0.5)
+    if atarget == "fire":
+        p1 = (get_burned(self.prev_map3)+get_burning(self.prev_map3))
+        p2 = (get_burned(self.prev_map2)+get_burning(self.prev_map2))
+        p3 = (get_burned(self.prev_map)+get_burning(self.prev_map))
+        p4 = (get_burned(self.fire_map)+get_burning(self.fire_map))
+
+        v1 = (p2 - p1)/p1
+        v2 = (p3 - p2)/p2
+        v3 = (p4 - p3)/p3
+
+        a1 = v2 - v1
+        a2 = v3 - v2
+    elif atarget == "prob":
+        p1 = np.sum(self.prev_prob3)
+        p2 = np.sum(self.prev_prob2)
+        p3 = np.sum(self.prev_prob)
+        p4 = np.sum(self.prob_map)
+
+        v1 = (p2 - p1)/p1
+        v2 = (p3 - p2)/p2
+        v3 = (p4 - p3)/p3
+
+        if p1 == 0:
+            v1 = 0
+        if p2 == 0:
+            v2 = 0
+        if p3 == 0:
+            v3 = 0
+
+        a1 = v2 - v1
+        a2 = v3 - v2
+
+    return -5*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 2*dist - 10*(v3)
     
 
 def run_one_simulation_step(self, total_updates):
@@ -148,6 +187,23 @@ def distance_to_fire(mp,x,y):
         for item in row:
             j+=1
             if item == 1 and np.sqrt((x-i)**2+(y-j)**2) < mn:
+                flag = False
+                mn = np.sqrt((x-i)**2+(y-j)**2)
+                closest_square = [i,j]
+    if flag:
+        return 0,[0,0]
+    return mn, closest_square
+def distance_to_target(mp,x,y, target):
+    i = -1
+    mn = 2*int(mp.shape[1])
+    closest_square = []
+    flag = True
+    for row in mp:
+        i+=1
+        j = -1
+        for item in row:
+            j+=1
+            if item == target and np.sqrt((x-i)**2+(y-j)**2) < mn:
                 flag = False
                 mn = np.sqrt((x-i)**2+(y-j)**2)
                 closest_square = [i,j]
@@ -325,11 +381,16 @@ class CustomEnv(gym.Env):
         if get_burning(self.fire_map) == 0:
             terminated = True
             truncated = True
+        
         reward = get_reward_l2_acc(self, target="prob", atarget="prob")#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
         if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
             reward -= 5
+        elif square_state(self.fire_map, self.agent_x,self.agent_y) == 2:
+            reward -= 2
         if action_str == "fireline":
             if self.prob_map[self.agent_y][self.agent_x] != 0:
+                reward += 5
+            if distance_to_target(self.fire_map,self.agent_x,self.agent_y, 3) < 2:
                 reward += 5
 
         with open(self.analytics_dir+"//customLog.txt","a") as f:
