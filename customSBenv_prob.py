@@ -262,7 +262,7 @@ class CustomEnv(gym.Env):
             self.action_space = spaces.Discrete(n_actions)
             self.action_names = ["up","down","left","right","fireline"]
         n_channel = 2
-        self.observation_space = spaces.Box(low=0, high=255,shape=(n_channel, self.screen_size, self.screen_size), dtype=np.float32)
+        self.observation_space = spaces.Box(low=0, high=4,shape=(n_channel, self.screen_size, self.screen_size), dtype=np.float32)
 
 
     def step(self, action):
@@ -324,7 +324,6 @@ class CustomEnv(gym.Env):
             f.write("\n REWARD, "+str(reward)+","+str(get_burned(self.fire_map))+","+str(get_burning(self.fire_map))+","+str(get_unburned(self.fire_map))+","+str(distance_to_fire(self.fire_map,self.agent_x,self.agent_y)[0]))
 
         if self.chkpt_flag:
-            #save_array_to_file(self.fire_map, self.chkpt_dir+"//"+str(self.episode_steps)+".txt")
             np.save(self.chkpt_dir+"//"+str(self.episode_steps)+".npy",self.fire_map)
         if self.episode_steps%self.simulation_steps_per_timestep == 0:
             self.prev_map3 = copy.deepcopy(self.prev_map2)
