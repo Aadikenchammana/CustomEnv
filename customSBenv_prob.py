@@ -390,7 +390,7 @@ class CustomEnv(gym.Env):
         if action_str == "fireline":
             if self.prob_map[self.agent_y][self.agent_x] != 0:
                 reward += 5
-            if distance_to_target(self.fire_map,self.agent_x,self.agent_y, 3) < 2:
+            if distance_to_target(self.fire_map,self.agent_x,self.agent_y, 3)[0] < 2:
                 reward += 5
 
         with open(self.analytics_dir+"//customLog.txt","a") as f:
