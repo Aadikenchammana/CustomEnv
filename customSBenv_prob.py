@@ -112,7 +112,7 @@ def get_reward_l2_acc(self, target="fire", atarget = "fire"):
         a1 = v2 - v1
         a2 = v3 - v2
 
-    return -10*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 0.2*dist - 10*(v3)
+    return -10*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 2*dist - 10*(v3)
     
 
 def run_one_simulation_step(self, total_updates):
@@ -221,7 +221,7 @@ class CustomEnv(gym.Env):
         self.agent_start = [10,10]
         self.episode_steps = 0
         self.updates_per_step = 1
-        self.total_steps_per_episode = 1200
+        self.total_steps_per_episode = 600
         self.episodes_per_fire_restart = 2500
         self.chkpt_thresh = 400
         self.simulation_steps_per_timestep = 16
