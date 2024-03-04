@@ -264,9 +264,9 @@ class CustomEnv(gym.Env):
         with open(self.analytics_dir+"//customLog.txt","w") as f:
             f.write("\nENVIRONMENT GENERATED")
 
-        self.chkpt_flag = True
-        self.chkpt_dir = self.analytics_dir+"//fires//0"
-        os.mkdir(self.chkpt_dir)
+        #self.chkpt_flag = True
+        #self.chkpt_dir = self.analytics_dir+"//fires//0"
+        #os.mkdir(self.chkpt_dir)
 
         
         if self.autoplace:
@@ -337,7 +337,6 @@ class CustomEnv(gym.Env):
         
         with open(self.analytics_dir+"//rewardLog.txt","a") as f:
             f.write("\n REWARD, "+str(reward)+","+str(get_burned(self.fire_map))+","+str(get_burning(self.fire_map))+","+str(get_unburned(self.fire_map))+","+str(distance_to_fire(self.fire_map,self.agent_x,self.agent_y)[0]))
-
         if self.chkpt_flag:
             np.save(self.chkpt_dir+"//"+str(self.episode_steps)+".npy",self.fire_map)
         if self.episode_steps%self.simulation_steps_per_timestep == 0:
@@ -352,7 +351,6 @@ class CustomEnv(gym.Env):
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed, options=options)
-        self.episode_num +=1
         self.chkpt_flag = False
         if self.episode_num % self.chkpt_thresh == 0:
             self.chkpt_flag = True
@@ -377,6 +375,7 @@ class CustomEnv(gym.Env):
         self.prev_prob = copy.deepcopy(self.prob_map)
         self.prev_prob2 = copy.deepcopy(self.prob_map)
         self.prev_prob3 = copy.deepcopy(self.prob_map)
+        self.episode_num +=1
 
         with open(self.analytics_dir+"//customLog.txt","a") as f:
             f.write("\n NEW TRAINING ITERATION CREATION")
