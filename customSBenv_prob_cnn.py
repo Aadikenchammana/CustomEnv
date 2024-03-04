@@ -309,7 +309,7 @@ class CustomEnv(gym.Env):
         self.episode_num +=1
         if self.episode_num % self.chkpt_thresh == 0:
             self.chkpt_flag = True
-            self.chkpt_dir = self.analytics_dir+"//fires//"+str(int(self.episode_num/self.chkpt_thresh))
+            self.chkpt_dir = self.analytics_dir+"//fires//"+str(self.episode_num)
             os.mkdir(self.chkpt_dir)
         if self.episode_num%self.episodes_per_fire_restart == 0:
             self.config.fire.fire_initial_position = calc_random_start(self.config.area.screen_size[0])

@@ -113,7 +113,7 @@ def get_reward_l2_acc(self, target="fire", atarget = "fire"):
         a1 = v2 - v1
         a2 = v3 - v2
 
-    return -10*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 2*dist - 10*(v3)
+    return -10*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 1*dist - 8*(v3)
 
 def get_reward_l2_acc_test(self, target="fire", atarget = "fire"):
     if target == "fire":
@@ -174,6 +174,7 @@ def run_one_simulation_step(self, total_updates):
     return self.sim.fire_map, self.sim.active
 
 def calc_random_start(screen_size):
+    return 21, 21
     return(random.randint(0,screen_size-1),random.randint(0,screen_size-1))
 
 def distance_to_fire(mp,x,y):
@@ -294,7 +295,7 @@ class CustomEnv(gym.Env):
         self.updates_per_step = 1
         self.total_steps_per_episode = 600
         self.episodes_per_fire_restart = 2500
-        self.chkpt_thresh = 400
+        self.chkpt_thresh = 100
         self.simulation_steps_per_timestep = 16
         self.episode_num = 0
         self.autoplace = False
@@ -382,7 +383,7 @@ class CustomEnv(gym.Env):
             terminated = True
             truncated = True
         
-        reward = get_reward_l2_acc_test(self, target="prob", atarget="prob")#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
+        reward = get_reward_l2_acc(self, target="prob", atarget="prob")#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
         if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
             reward -= 5
         elif square_state(self.fire_map, self.agent_x,self.agent_y) == 2:
@@ -416,7 +417,7 @@ class CustomEnv(gym.Env):
         self.episode_num +=1
         if self.episode_num % self.chkpt_thresh == 0:
             self.chkpt_flag = True
-            self.chkpt_dir = self.analytics_dir+"//fires//"+str(int(self.episode_num/self.chkpt_thresh))
+            self.chkpt_dir = self.analytics_dir+"//fires//"+str(self.episode_num)
             os.mkdir(self.chkpt_dir)
         if self.episode_num%self.episodes_per_fire_restart == 0:
             self.config.fire.fire_initial_position = calc_random_start(self.config.area.screen_size[0])
@@ -465,9 +466,10 @@ if False:
 model = PPO('MlpPolicy', env, verbose=1)
 save_path = 'saved_models//'+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
 os.mkdir(save_path)
+save_path += "//"
 callback = SaveModelCallback(save_path=save_path, check_freq=10000)
 # Train the agent and display a progress bar
-model.learn(total_timesteps=int(8e6), progress_bar=True)
+model.learn(total_timesteps=int(8e6), progress_bar=True, callback=callback)
 # Save the agent
 model.save("dqn_lunar")
 del model
