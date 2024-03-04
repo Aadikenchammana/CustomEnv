@@ -379,7 +379,7 @@ class CustomEnv(gym.Env):
         truncated = False
         if self.episode_steps > self.total_steps_per_episode:
             terminated = True
-        if get_burning(self.fire_map) == 0:
+        if get_burning(self.fire_map) == 0 or not self.fire_status:
             terminated = True
             truncated = True
         

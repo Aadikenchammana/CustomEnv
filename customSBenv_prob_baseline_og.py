@@ -210,6 +210,7 @@ class SaveModelCallback(BaseCallback):
 
     def _on_step(self) -> bool:
         if self.n_calls % self.check_freq == 0:
+            print(os.path.join(self.save_path, f'model_{self.num_timesteps}'))
             self.model.save(os.path.join(self.save_path, f'model_{self.num_timesteps}'))
         return True
 
@@ -238,7 +239,7 @@ class CustomEnv(gym.Env):
         self.updates_per_step = 1
         self.total_steps_per_episode = 600
         self.episodes_per_fire_restart = 2500
-        self.chkpt_thresh = 400
+        self.chkpt_thresh = 100
         self.simulation_steps_per_timestep = 8
         self.episode_num = 0
         self.autoplace = True
@@ -322,9 +323,9 @@ class CustomEnv(gym.Env):
         truncated = False
         if self.episode_steps > self.total_steps_per_episode:
             terminated = True
-        if get_burning(self.fire_map) == 0:
+        if get_burning(self.fire_map) == 0 or not self.fire_status:
             terminated = True
-            truncated = True
+            truncated = False
         reward = get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
         if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
             reward -= 5
