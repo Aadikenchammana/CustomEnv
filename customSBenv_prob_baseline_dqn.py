@@ -210,8 +210,8 @@ class SaveModelCallback(BaseCallback):
 
     def _on_step(self) -> bool:
         if self.n_calls % self.check_freq == 0:
-            print(os.path.join(self.save_path, f'model_{self.num_timesteps}'))
-            self.model.save(os.path.join(self.save_path, f'model_{self.num_timesteps}'))
+            print(os.path.join(self.save_path, f'PBD_{self.num_timesteps}'))
+            self.model.save(os.path.join(self.save_path, f'PBD_{self.num_timesteps}'))
         return True
 
 class CustomEnv(gym.Env):
