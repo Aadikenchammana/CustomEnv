@@ -326,7 +326,7 @@ class CustomEnv(gym.Env):
         if get_burning(self.fire_map) == 0 or not self.fire_status:
             terminated = True
             truncated = False
-        reward = get_reward_l2_acc(self, target="prob", atarget="prob")#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
+        reward = get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
         if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
             reward -= 5
         elif square_state(self.fire_map, self.agent_x,self.agent_y) == 2:
