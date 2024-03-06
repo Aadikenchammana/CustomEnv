@@ -213,7 +213,10 @@ class SaveModelCallback(BaseCallback):
             print(os.path.join(self.save_path, f'PBD_{self.num_timesteps}'))
             self.model.save(os.path.join(self.save_path, f'PBD_{self.num_timesteps}'))
         return True
-
+def calc_preset_start(self):
+    if self.preset_fires_index > len(self.preset_fires_starts)-1:
+        return self.preset_fires_starts[0], 1
+    return self.preset_fires_starts[self.preset_fires_index], self.preset_fires_index + 1
 class CustomEnv(gym.Env):
     """Custom Environment that follows gym interface."""
 
@@ -225,7 +228,9 @@ class CustomEnv(gym.Env):
         self.config = simfire.utils.config.Config("configs/operational_config.yml")
         print(self.config.area.screen_size)
         print(self.config)
-        self.config.fire.fire_initial_position = calc_random_start(self.config.area.screen_size[0])
+        self.preset_fires_starts = [(5,5),(22,5),(22,22),(5,22),(13,13),(5,13),(13,5), (22,13), (13, 22)]
+        self.preset_fires_index = 0
+        self.config.fire.fire_initial_position, self.preset_fires_index = calc_preset_start(self) #calc_random_start(self.config.area.screen_size[0])
         print(self.config.fire.fire_initial_position)
         
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
@@ -358,7 +363,7 @@ class CustomEnv(gym.Env):
             self.chkpt_dir = self.analytics_dir+"//fires//"+str(self.episode_num)
             os.mkdir(self.chkpt_dir)
         if self.episode_num%self.episodes_per_fire_restart == 0:
-            self.config.fire.fire_initial_position = calc_random_start(self.config.area.screen_size[0])
+            self.config.fire.fire_initial_position, self.preset_fires_index = calc_preset_start(self) #calc_random_start(self.config.area.screen_size[0])
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
         self.sim.reset()
         self.fire_map, self.fire_status = run_one_simulation_step(self, 0)
