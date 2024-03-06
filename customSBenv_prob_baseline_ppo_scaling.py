@@ -278,7 +278,7 @@ class CustomEnv(gym.Env):
         self.agent_y = 10
         self.agent_start = [10,10]
         self.episode_steps = 0
-        self.updates_per_step = 1
+        self.updates_per_step = 10
         self.total_steps_per_episode = 600
         self.episodes_per_fire_restart = 2500
         self.chkpt_thresh = 100
