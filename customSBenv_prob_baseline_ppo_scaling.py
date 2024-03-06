@@ -265,7 +265,7 @@ class CustomEnv(gym.Env):
         self.config = simfire.utils.config.Config("configs/operational_config_scaled.yml")
         print(self.config.area.screen_size)
         print(self.config)
-        self.scaled_screen_size = 27
+        self.scaled_screen_size = 31
         self.config.fire.fire_initial_position = (16,10)#calc_random_start(self.scaled_screen_size)
         print(self.config.fire.fire_initial_position)
         
@@ -278,11 +278,11 @@ class CustomEnv(gym.Env):
         self.agent_y = 5
         self.agent_start = [5,5]
         self.episode_steps = 0
-        self.updates_per_step = 1
+        self.updates_per_step = 8
         self.total_steps_per_episode = 600
         self.episodes_per_fire_restart = 2500
         self.chkpt_thresh = 100
-        self.simulation_steps_per_timestep = 8
+        self.simulation_steps_per_timestep = 15
         self.episode_num = 0
         self.autoplace = True
 
