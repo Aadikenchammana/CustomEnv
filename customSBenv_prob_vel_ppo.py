@@ -378,7 +378,9 @@ class CustomEnv(gym.Env):
         self.prob_map = generate_probabilities(self,5)
 
 
-        observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
+        agent_fire_map = copy.deepcopy(self.fire_map)
+        agent_fire_map[self.agent_y][self.agent_x] = 4
+        observation_map = np.stack((agent_fire_map, self.prob_map), axis=0)
         self.observation = observation_map[newaxis,:,:]
         terminated = False
         truncated = False
