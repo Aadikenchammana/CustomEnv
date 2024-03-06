@@ -322,7 +322,9 @@ class CustomEnv(gym.Env):
         self.prob_map = generate_probabilities(self,5)
 
 
-        observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
+        agent_fire_map = copy.deepcopy(self.fire_map)
+        agent_fire_map[self.agent_y][self.agent_x] = 4
+        observation_map = np.stack((agent_fire_map, self.prob_map), axis=0)
         self.observation = observation_map[newaxis,:,:]
         terminated = False
         truncated = False
@@ -331,7 +333,7 @@ class CustomEnv(gym.Env):
         if get_burning(self.fire_map) == 0 or not self.fire_status:
             terminated = True
             truncated = False
-        reward = get_reward_l2_acc(self, target="prob", atarget="prob")#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
+        reward = get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
         if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
             reward -= 5
         elif square_state(self.fire_map, self.agent_x,self.agent_y) == 2:

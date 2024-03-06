@@ -210,10 +210,13 @@ class SaveModelCallback(BaseCallback):
 
     def _on_step(self) -> bool:
         if self.n_calls % self.check_freq == 0:
-            print(os.path.join(self.save_path, f'PBP_{self.num_timesteps}'))
-            self.model.save(os.path.join(self.save_path, f'PBP_{self.num_timesteps}'))
+            print(os.path.join(self.save_path, f'PBD_{self.num_timesteps}'))
+            self.model.save(os.path.join(self.save_path, f'PBD_{self.num_timesteps}'))
         return True
-
+def calc_preset_start(self):
+    if self.preset_fires_index > len(self.preset_fires_starts)-1:
+        return self.preset_fires_starts[0], 1
+    return self.preset_fires_starts[self.preset_fires_index], self.preset_fires_index + 1
 class CustomEnv(gym.Env):
     """Custom Environment that follows gym interface."""
 
@@ -225,7 +228,9 @@ class CustomEnv(gym.Env):
         self.config = simfire.utils.config.Config("configs/operational_config.yml")
         print(self.config.area.screen_size)
         print(self.config)
-        self.config.fire.fire_initial_position = calc_random_start(self.config.area.screen_size[0])
+        self.preset_fires_starts = [(5,5),(22,5),(22,22),(5,22),(13,13),(5,13),(13,5), (22,13), (13, 22)]
+        self.preset_fires_index = 0
+        self.config.fire.fire_initial_position, self.preset_fires_index = calc_preset_start(self) #calc_random_start(self.config.area.screen_size[0])
         print(self.config.fire.fire_initial_position)
         
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
@@ -317,7 +322,9 @@ class CustomEnv(gym.Env):
         self.prob_map = generate_probabilities(self,5)
 
 
-        observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
+        agent_fire_map = copy.deepcopy(self.fire_map)
+        agent_fire_map[self.agent_y][self.agent_x] = 4
+        observation_map = np.stack((agent_fire_map, self.prob_map), axis=0)
         self.observation = observation_map[newaxis,:,:]
         terminated = False
         truncated = False
@@ -326,7 +333,7 @@ class CustomEnv(gym.Env):
         if get_burning(self.fire_map) == 0 or not self.fire_status:
             terminated = True
             truncated = False
-        reward = get_reward_l2_acc(self, target="prob", atarget="prob")#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
+        reward = get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
         if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
             reward -= 5
         elif square_state(self.fire_map, self.agent_x,self.agent_y) == 2:
@@ -358,7 +365,7 @@ class CustomEnv(gym.Env):
             self.chkpt_dir = self.analytics_dir+"//fires//"+str(self.episode_num)
             os.mkdir(self.chkpt_dir)
         if self.episode_num%self.episodes_per_fire_restart == 0:
-            self.config.fire.fire_initial_position = calc_random_start(self.config.area.screen_size[0])
+            self.config.fire.fire_initial_position, self.preset_fires_index = calc_preset_start(self) #calc_random_start(self.config.area.screen_size[0])
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
         self.sim.reset()
         self.fire_map, self.fire_status = run_one_simulation_step(self, 0)
@@ -400,8 +407,8 @@ if False:
     check_env(env)
     quit()
 # Instantiate the agent
-#model = DQN("MlpPolicy", env, verbose=1)
-model = PPO('MlpPolicy', env, verbose=1)
+model = DQN("MlpPolicy", env, verbose=1)
+#model = PPO('MlpPolicy', env, verbose=1)
 save_path = 'saved_models//'+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
 os.mkdir(save_path)
 save_path += "//"
