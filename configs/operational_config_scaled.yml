@@ -11,7 +11,7 @@ display:
   rescale_factor: 2
 
 simulation:
-  update_rate: 60
+  update_rate: 1
   runtime: 15h
   headless: false
   draw_spread_graph: false
@@ -86,10 +86,13 @@ fire:
   diagonal_spread: true
 
 environment:
-  moisture: 0.001
+  typ: static
+  moisture: 0.01
+  location: LFMC/rawHide.npy
+  pixls: 30
 
 wind:
-  function: perlin
+  function: windninja
   cfd:
     time_to_train: 1000
     result_accuracy: 1
@@ -105,18 +108,20 @@ wind:
     direction: 90.0
   perlin:
     speed:
-      seed: 2345
-      scale: 400
-      octaves: 3
-      persistence: 0.7
-      lacunarity: 2.0
+      seed: 4 #2345
+      scale: 1 #400
+      octaves: 30 #3
+      persistence: 20 #0.7
+      lacunarity: 5.0 #2.0
       range_min: 7
-      range_max: 47
+      range_max: 160 #47
     direction:
-      seed: 650
-      scale: 1500
+      seed: 100000 #650
+      scale: 1 #1500
       octaves: 2
       persistence: 0.9
       lacunarity: 1.0
       range_min: 0.0
       range_max: 360.0
+  windninja:
+    data_dir: medicine

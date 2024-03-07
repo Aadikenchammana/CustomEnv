@@ -1,40 +1,39 @@
 # For a description of config parameters, go to
 # https://fireline.pages.mitre.org/simfire/config.html
 area:
-  screen_size: [30, 30] # h, w
-  pixel_scale: 30
+  screen_size: [225, 225]
+  pixel_scale: 50
 
 display:
   fire_size: 2
   control_line_size: 2
   agent_size: 4
-  rescale_factor: 2
 
 simulation:
   update_rate: 1
-  runtime: 15h
+  runtime: 24h
   headless: false
   draw_spread_graph: false
   record: true
   save_data: false
   data_type: "npy"
-  sf_home: "~/Desktop/SSF2024/Papers/simfire/outputs"
+  sf_home: "/tmp/test"
 
 mitigation:
-  ros_attenuation: false
+  ros_attenuation: true
 
 operational:
   seed:
-  latitude: 36.31 # top left corner
-  longitude: -120.7347 # top left corner
-  height: 1000  #20000 # in meters36900
-  width: 1000 #20000 # in meters
-  resolution: 30 # in meters
+  latitude: 39.67
+  longitude: -119.8
+  height: 4000
+  width: 4000
+  resolution: 30
   year: 2020
 
 terrain:
   topography:
-    type: operational
+    type: functional
     functional:
       function: perlin
       perlin:
@@ -51,77 +50,53 @@ terrain:
         sigma_x: 50
         sigma_y: 50
   fuel:
-    type: operational
+    type: functional
     functional:
       function: chaparral
       chaparral:
         seed: 1113
-    burn_probability:
-      type: operational
-      functional:
-        function: perlin
-        perlin:
-          octaves: 3
-          persistence: 0.7
-          lacunarity: 2.0
-          seed: 827
-          range_min: 100.0
-          range_max: 300.0
-        gaussian:
-          amplitude: 500
-          mu_x: 50
-          mu_y: 50
-          sigma_x: 50
-          sigma_y: 50
-
 
 fire:
   fire_initial_position:
     type: static
     static:
-      position: (33, 33)
+      position: (16, 16)
     random:
-      seed: 1234
-  max_fire_duration: 6
+      seed: 8888
+  max_fire_duration: 4
   diagonal_spread: true
 
 environment:
-  typ: static
-  moisture: 0.01
-  location: LFMC/rawHide.npy
-  pixls: 30
+  moisture: 0.03
 
 wind:
-  function: windninja
+  function: simple
   cfd:
     time_to_train: 1000
-    result_accuracy: 1
     iterations: 1
     scale: 1
     timestep_dt: 1.0
     diffusion: 0.0
     viscosity: 0.0000001
-    speed: 19.0
+    speed: 19
     direction: north
   simple:
-    speed: 7
+    speed: 1
     direction: 90.0
   perlin:
     speed:
-      seed: 4 #2345
-      scale: 1 #400
-      octaves: 30 #3
-      persistence: 20 #0.7
-      lacunarity: 5.0 #2.0
+      seed: 2345
+      scale: 400
+      octaves: 3
+      persistence: 0.7
+      lacunarity: 2.0
       range_min: 7
-      range_max: 160 #47
+      range_max: 47
     direction:
-      seed: 100000 #650
-      scale: 1 #1500
+      seed: 650
+      scale: 1500
       octaves: 2
       persistence: 0.9
       lacunarity: 1.0
       range_min: 0.0
       range_max: 360.0
-  windninja:
-    data_dir: medicine
