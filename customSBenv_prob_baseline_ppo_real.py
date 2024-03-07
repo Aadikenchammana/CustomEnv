@@ -228,7 +228,7 @@ class CustomEnv(gym.Env):
         self.config = simfire.utils.config.Config("configs/operational_config_scaled.yml")
         print(self.config.area.screen_size)
         print(self.config)
-        self.config.fire.fire_initial_position = (17,12)
+        self.config.fire.fire_initial_position = (16,10)
         print(self.config.fire.fire_initial_position)
         
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
@@ -365,10 +365,10 @@ class CustomEnv(gym.Env):
             self.chkpt_dir = self.analytics_dir+"//fires//"+str(self.episode_num)
             os.mkdir(self.chkpt_dir)
         if self.episode_num%self.episodes_per_fire_restart == 0:
-            self.config.fire.fire_initial_position = (17,12)
+            self.config.fire.fire_initial_position = (16,10)
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
         self.sim.reset()
-        self.fire_map, self.fire_status = run_one_simulation_step(self, 3)
+        self.fire_map, self.fire_status = run_one_simulation_step(self, 2)
         self.prob_map = np.zeros_like(self.fire_map)
         observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
         self.observation_return = observation_map[newaxis,:,:]
