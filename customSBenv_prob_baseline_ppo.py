@@ -210,8 +210,8 @@ class SaveModelCallback(BaseCallback):
 
     def _on_step(self) -> bool:
         if self.n_calls % self.check_freq == 0:
-            print(os.path.join(self.save_path, f'PBD_{self.num_timesteps}'))
-            self.model.save(os.path.join(self.save_path, f'PBD_{self.num_timesteps}'))
+            print(os.path.join(self.save_path, f'PBP_{self.num_timesteps}'))
+            self.model.save(os.path.join(self.save_path, f'PBP_{self.num_timesteps}'))
         return True
 def calc_preset_start(self):
     if self.preset_fires_index > len(self.preset_fires_starts)-1:
@@ -323,8 +323,6 @@ class CustomEnv(gym.Env):
         self.prob_map = generate_probabilities(self,5)
 
 
-        #current_fire_map = copy.deepcopy(self.fire_map)
-        #self.fire_map[self.agent_y][self.agent_x] = 4
         observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
         self.observation = observation_map[newaxis,:,:]
         terminated = False

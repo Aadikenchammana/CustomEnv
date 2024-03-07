@@ -283,7 +283,7 @@ class CustomEnv(gym.Env):
             self.action_space = spaces.Discrete(n_actions)
             self.action_names = ["up","down","left","right","fireline"]
         n_channel = 2
-        self.observation_space = spaces.Box(low=0, high=4,shape=(n_channel, self.screen_size, self.screen_size), dtype=np.float32)
+        self.observation_space = spaces.Box(low=0, high=5,shape=(n_channel, self.screen_size, self.screen_size), dtype=np.float32)
 
 
     def step(self, action):
@@ -319,6 +319,7 @@ class CustomEnv(gym.Env):
 
         if self.episode_steps%self.simulation_steps_per_timestep == 0:
             self.fire_map, self.fire_status = run_one_simulation_step(self, self.updates_per_step)
+        self.fire_map = self.sim.fire_map
         self.prob_map = generate_probabilities(self,5)
 
 
