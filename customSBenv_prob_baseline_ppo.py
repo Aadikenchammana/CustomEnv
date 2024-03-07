@@ -269,9 +269,9 @@ class CustomEnv(gym.Env):
         with open(self.analytics_dir+"//customLog.txt","w") as f:
             f.write("\nENVIRONMENT GENERATED")
 
-        self.chkpt_flag = True
-        self.chkpt_dir = self.analytics_dir+"//fires//0"
-        os.mkdir(self.chkpt_dir)
+        #self.chkpt_flag = True
+        #self.chkpt_dir = self.analytics_dir+"//fires//0"
+        #os.mkdir(self.chkpt_dir)
 
         
         if self.autoplace:
@@ -283,7 +283,7 @@ class CustomEnv(gym.Env):
             self.action_space = spaces.Discrete(n_actions)
             self.action_names = ["up","down","left","right","fireline"]
         n_channel = 2
-        self.observation_space = spaces.Box(low=0, high=4,shape=(n_channel, self.screen_size, self.screen_size), dtype=np.float32)
+        self.observation_space = spaces.Box(low=0, high=5,shape=(n_channel, self.screen_size, self.screen_size), dtype=np.float32)
 
 
     def step(self, action):
@@ -319,12 +319,13 @@ class CustomEnv(gym.Env):
 
         if self.episode_steps%self.simulation_steps_per_timestep == 0:
             self.fire_map, self.fire_status = run_one_simulation_step(self, self.updates_per_step)
+        self.fire_map = self.sim.fire_map
         self.prob_map = generate_probabilities(self,5)
 
 
-        agent_fire_map = copy.deepcopy(self.fire_map)
-        agent_fire_map[self.agent_y][self.agent_x] = 4
-        observation_map = np.stack((agent_fire_map, self.prob_map), axis=0)
+        #current_fire_map = copy.deepcopy(self.fire_map)
+        self.fire_map[self.agent_y][self.agent_x] = 4
+        observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
         self.observation = observation_map[newaxis,:,:]
         terminated = False
         truncated = False
@@ -359,7 +360,8 @@ class CustomEnv(gym.Env):
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed, options=options)
-        self.episode_num +=1
+        
+        self.chkpt_flag = False
         if self.episode_num % self.chkpt_thresh == 0:
             self.chkpt_flag = True
             self.chkpt_dir = self.analytics_dir+"//fires//"+str(self.episode_num)
@@ -383,6 +385,7 @@ class CustomEnv(gym.Env):
         self.prev_prob = copy.deepcopy(self.prob_map)
         self.prev_prob2 = copy.deepcopy(self.prob_map)
         self.prev_prob3 = copy.deepcopy(self.prob_map)
+        self.episode_num +=1
 
         with open(self.analytics_dir+"//customLog.txt","a") as f:
             f.write("\n NEW TRAINING ITERATION CREATION")
@@ -407,8 +410,8 @@ if False:
     check_env(env)
     quit()
 # Instantiate the agent
-model = DQN("MlpPolicy", env, verbose=1)
-#model = PPO('MlpPolicy', env, verbose=1)
+#model = DQN("MlpPolicy", env, verbose=1)
+model = PPO('MlpPolicy', env, verbose=1)
 save_path = 'saved_models//'+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
 os.mkdir(save_path)
 save_path += "//"

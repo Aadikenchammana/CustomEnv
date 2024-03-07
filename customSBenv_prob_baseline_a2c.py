@@ -353,6 +353,7 @@ class CustomEnv(gym.Env):
     def reset(self, seed=None, options=None):
         super().reset(seed=seed, options=options)
         self.episode_num +=1
+        self.chkpt_flag = True
         if self.episode_num % self.chkpt_thresh == 0:
             self.chkpt_flag = True
             self.chkpt_dir = self.analytics_dir+"//fires//"+str(self.episode_num)
