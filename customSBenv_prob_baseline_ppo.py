@@ -324,7 +324,7 @@ class CustomEnv(gym.Env):
 
 
         #current_fire_map = copy.deepcopy(self.fire_map)
-        self.fire_map[self.agent_y][self.agent_x] = 4
+        #self.fire_map[self.agent_y][self.agent_x] = 4
         observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
         self.observation = observation_map[newaxis,:,:]
         terminated = False

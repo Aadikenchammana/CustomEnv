@@ -221,8 +221,6 @@ class LandFireLatLongBox:
         ```
 
         """
-        print(self.output_path)
-        print(self.output_path.glob("*.tif"))
         tifs = [str(t) for t in self.output_path.glob("*.tif")][0]
 
         # the order the data was requested is the order of the Band in the Tif file
