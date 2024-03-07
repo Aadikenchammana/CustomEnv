@@ -368,7 +368,7 @@ class CustomEnv(gym.Env):
             self.config.fire.fire_initial_position = (17,12)
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
         self.sim.reset()
-        self.fire_map, self.fire_status = run_one_simulation_step(self, 1)
+        self.fire_map, self.fire_status = run_one_simulation_step(self, 3)
         self.prob_map = np.zeros_like(self.fire_map)
         observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
         self.observation_return = observation_map[newaxis,:,:]
