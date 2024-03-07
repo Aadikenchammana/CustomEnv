@@ -198,6 +198,7 @@ class FireSimulation(Simulation):
         self.agents: Dict[int, Agent] = {}
         self._create_out_path()
         self.reset()
+        print("using custom env")
 
     def reset(self) -> None:
         """
