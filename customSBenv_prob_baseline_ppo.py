@@ -193,7 +193,7 @@ def generate_probabilities(self, steps):
     for step in range(steps):
         new_map = simple_expansion(past_map)
         prob_map[(past_map == 0) & (new_map == 1)] = 1/(step+1)
-        past_map = copy.deepcopy(new_map)
+        past_map = new_map#copy.deepcopy(new_map)
     return prob_map
 
 def square_state(mp, x, y):
