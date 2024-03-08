@@ -238,9 +238,9 @@ class CustomEnv(gym.Env):
         self.screen_size = self.config.area.screen_size[0]
         self.prob_map = np.zeros_like(self.sim.fire_map)
         self.fire_map = self.sim.fire_map
-        self.agent_x = 10
-        self.agent_y = 10
-        self.agent_start = [10,10]
+        self.agent_x = 15
+        self.agent_y = 15
+        self.agent_start = [15,15]
         self.episode_steps = 0
         self.updates_per_step = 1
         self.total_steps_per_episode = 600
