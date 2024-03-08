@@ -231,7 +231,7 @@ class CustomEnv(gym.Env):
         self.preset_fires_starts = [(5,5),(22,5),(22,22),(5,22),(13,13),(5,13),(13,5), (22,13), (13, 22)]
         self.preset_fires_index = 0
         self.config.fire.fire_initial_position, self.preset_fires_index = calc_preset_start(self) #calc_random_start(self.config.area.screen_size[0])
-        self.config.fire.fire_initial_position = (5,22)
+        self.config.fire.fire_initial_position = (22,22)
         print(self.config.fire.fire_initial_position)
         
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
