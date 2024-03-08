@@ -236,14 +236,14 @@ class CustomEnv(gym.Env):
         self.prob_map = np.zeros_like(self.sim.fire_map)
         self.fire_map = self.sim.fire_map
         self.agent_x = 10
-        self.agent_y = 17
-        self.agent_start = [10,17]
+        self.agent_y = 13
+        self.agent_start = [10,13]
         self.episode_steps = 0
         self.updates_per_step = 1
         self.total_steps_per_episode = 600
         self.episodes_per_fire_restart = 2500
         self.chkpt_thresh = 100
-        self.simulation_steps_per_timestep = 10
+        self.simulation_steps_per_timestep = 16
         self.episode_num = 0
         self.autoplace = True
 
