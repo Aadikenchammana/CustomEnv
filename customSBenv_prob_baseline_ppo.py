@@ -225,7 +225,7 @@ class CustomEnv(gym.Env):
     def __init__(self):
         super().__init__()
 
-        self.config = simfire.utils.config.Config("configs/operational_config_scaled.yml")
+        self.config = simfire.utils.config.Config("configs/operational_config.yml")
         print(self.config.area.screen_size)
         print(self.config)
         self.preset_fires_starts = [(5,5),(22,5),(22,22),(5,22),(13,13),(5,13),(13,5), (22,13), (13, 22)]
@@ -409,9 +409,9 @@ if False:
     quit()
 # Instantiate the agent
 #model = DQN("MlpPolicy", env, verbose=1)
-model = PPO('MlpPolicy', env, verbose=1)
+#model = PPO('MlpPolicy', env, verbose=1)
 model_path = 'previous_models//PBP_8000000.zip'
-#model = PPO.load(model_path, env=env)
+model = PPO.load(model_path, env=env)
 save_path = 'saved_models//'+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
 os.mkdir(save_path)
 save_path += "//"
