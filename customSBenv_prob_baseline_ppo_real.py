@@ -409,7 +409,7 @@ if False:
     quit()
 # Instantiate the agent
 #model = DQN("MlpPolicy", env, verbose=1)
-model_path = 'previous_models//PBP_2_7990000.zip'
+model_path = 'previous_models//PBPS_8000000.zip'
 model = PPO.load(model_path, env=env)
 #model = PPO('MlpPolicy', env, verbose=1)
 save_path = 'saved_models//'+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
