@@ -322,7 +322,7 @@ class CustomEnv(gym.Env):
 
 
         #current_fire_map = copy.deepcopy(self.fire_map)
-        self.fire_map[self.agent_y][self.agent_x] = 4
+        #self.fire_map[self.agent_y][self.agent_x] = 4
         observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
         self.observation = observation_map[newaxis,:,:]
         terminated = False
@@ -409,7 +409,9 @@ if False:
     quit()
 # Instantiate the agent
 #model = DQN("MlpPolicy", env, verbose=1)
-model = PPO('MlpPolicy', env, verbose=1)
+model_path = 'previous_models//PBP_8000000.zip'
+model = PPO.load(model_path, env=env)
+#model = PPO('MlpPolicy', env, verbose=1)
 save_path = 'saved_models//'+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
 os.mkdir(save_path)
 save_path += "//"

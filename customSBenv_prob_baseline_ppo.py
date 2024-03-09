@@ -231,7 +231,6 @@ class CustomEnv(gym.Env):
         self.preset_fires_starts = [(5,5),(22,5),(22,22),(5,22),(13,13),(5,13),(13,5), (22,13), (13, 22)]
         self.preset_fires_index = 0
         self.config.fire.fire_initial_position, self.preset_fires_index = calc_preset_start(self) #calc_random_start(self.config.area.screen_size[0])
-        self.config.fire.fire_initial_position = (22,5)
         print(self.config.fire.fire_initial_position)
         
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
@@ -323,7 +322,7 @@ class CustomEnv(gym.Env):
         self.fire_map = self.sim.fire_map
         self.prob_map = generate_probabilities(self,5)
 
-        self.fire_map[self.agent_y][self.agent_x] = 4
+        #self.fire_map[self.agent_y][self.agent_x] = 4
         observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
         self.observation = observation_map[newaxis,:,:]
         terminated = False
@@ -367,7 +366,6 @@ class CustomEnv(gym.Env):
             os.mkdir(self.chkpt_dir)
         if self.episode_num%self.episodes_per_fire_restart == 0:
             self.config.fire.fire_initial_position, self.preset_fires_index = calc_preset_start(self) #calc_random_start(self.config.area.screen_size[0])
-            self.config.fire.fire_initial_position = (22,5)
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
         self.sim.reset()
         self.fire_map, self.fire_status = run_one_simulation_step(self, 0)
@@ -411,7 +409,9 @@ if False:
     quit()
 # Instantiate the agent
 #model = DQN("MlpPolicy", env, verbose=1)
-model = PPO('MlpPolicy', env, verbose=1)
+#model = PPO('MlpPolicy', env, verbose=1)
+model_path = 'previous_models//PBP_8000000.zip'
+model = PPO.load(model_path, env=env)
 save_path = 'saved_models//'+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
 os.mkdir(save_path)
 save_path += "//"
