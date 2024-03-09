@@ -71,7 +71,7 @@ def get_reward_l2(mp,pmp, x, y, target="fire"):
     if target == "fire":
         dist, square = distance_to_fire(mp,x,y)
     if target == "prob":
-        dist, square = distance_to_prob(pmp, x, y, 1)
+        dist, square = distance_to_prob(pmp, x, y, 0.5)
 
     return -10*(get_burning(mp)+get_burned(mp))/get_total(mp) - 0.5*dist
 
