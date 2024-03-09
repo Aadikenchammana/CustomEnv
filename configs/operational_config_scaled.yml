@@ -11,7 +11,7 @@ display:
   rescale_factor: 2
 
 simulation:
-  update_rate: 19.7
+  update_rate: 0.6
   runtime: 100h
   headless: false
   draw_spread_graph: false
