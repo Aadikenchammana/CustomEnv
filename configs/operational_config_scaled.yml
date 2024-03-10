@@ -11,7 +11,7 @@ display:
   rescale_factor: 2
 
 simulation:
-  update_rate: 0.0001
+  update_rate: 0.0005
   runtime: 100h
   headless: false
   draw_spread_graph: false
@@ -28,7 +28,7 @@ operational:
   latitude: 38.5927 # top left corner
   longitude: -119.6616 # top left corner
   height: 21000  #20000 # in meters36900
-  width: 21000 #20000 # in meters
+  width: 15000 #20000 # in meters
   resolution: 30 # in meters
   year: 2020
 
