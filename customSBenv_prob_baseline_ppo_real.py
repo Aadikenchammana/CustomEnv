@@ -236,14 +236,14 @@ class CustomEnv(gym.Env):
         self.prob_map = np.zeros_like(self.sim.fire_map)
         self.fire_map = self.sim.fire_map
         self.agent_x = 10
-        self.agent_y = 13
-        self.agent_start = [10,13]
+        self.agent_y = 10
+        self.agent_start = [10,10]
         self.episode_steps = 0
         self.updates_per_step = 1
         self.total_steps_per_episode = 600
         self.episodes_per_fire_restart = 2500
         self.chkpt_thresh = 100
-        self.simulation_steps_per_timestep = 16
+        self.simulation_steps_per_timestep = 8
         self.episode_num = 0
         self.autoplace = True
 
@@ -368,7 +368,7 @@ class CustomEnv(gym.Env):
             self.config.fire.fire_initial_position = (15,5)
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
         self.sim.reset()
-        self.fire_map, self.fire_status = run_one_simulation_step(self, 3)
+        self.fire_map, self.fire_status = run_one_simulation_step(self, 0)
         self.prob_map = np.zeros_like(self.fire_map)
         observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
         self.observation_return = observation_map[newaxis,:,:]
