@@ -28,7 +28,7 @@ operational:
   latitude: 38.5927 # top left corner
   longitude: -119.6616 # top left corner
   height: 21000  #20000 # in meters36900
-  width: 15000 #20000 # in meters
+  width: 21000 #20000 # in meters
   resolution: 30 # in meters
   year: 2020
 
