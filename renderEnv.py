@@ -470,7 +470,7 @@ if False:
     check_env(env)
     quit()
 # Instantiate the agent
-model_path = 'previous_models//pretrainedSlinkTest.zip'
+model_path = 'previous_eval_models//pretrainedSlinkTest.zip'
 model = PPO.load(model_path, env=env)
 save_path = 'saved_models//'+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
 os.mkdir(save_path)
