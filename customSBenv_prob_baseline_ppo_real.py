@@ -14,10 +14,7 @@ import math
 import copy
 
 def save_array_to_file(array, filename):
-
-    # Convert array to string with custom format
     array_str = '|'.join(','.join(str(cell) for cell in row) for row in array)
-    # Save string to file
     with open(filename, 'w') as file:
         file.write(array_str)
     

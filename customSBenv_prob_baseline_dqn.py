@@ -409,7 +409,6 @@ env = CustomEnv()
 if False:
     check_env(env)
     quit()
-# Instantiate the agent
 #model = DQN("MlpPolicy", env, verbose=1)
 #model = PPO('MlpPolicy', env, verbose=1)
 model_path = 'previous_models//PBD_200000.zip'
@@ -418,8 +417,6 @@ save_path = 'saved_models//'+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
 os.mkdir(save_path)
 save_path += "//"
 callback = SaveModelCallback(save_path=save_path, check_freq=10000)
-# Train the agent and display a progress bar
 model.learn(total_timesteps=int(8e6), progress_bar=True, callback=callback)
-# Save the agent
 model.save("dqn_lunar")
 del model
