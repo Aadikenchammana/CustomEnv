@@ -119,9 +119,10 @@ def get_reward_bench(mp, pmp, step,target="fire"):
     bmp = np.load("benchmarks//"+str(step)+".npy")
     bmp_total =  get_burned(bmp)+get_burning(bmp)
 
-    #pmp_total = np.sum(pmp)
-    #bpmp = np.load("benchmarks//"+str(step+5)+".npy")
-    return bmp_total-mp_total
+    pmp_total = np.sum(pmp)
+    bpmp = generate_probs_from_bench(step)
+    bpmp_total = np.sum(bpmp)
+    return (bmp_total-mp_total) + (bpmp_total-pmp_total)
 
 
 def run_one_simulation_step(self, total_updates):
@@ -221,7 +222,15 @@ def generate_probabilities(self, steps):
         prob_map[(past_map == 0) & (new_map == 1)] = 1/(step+1)
         past_map = new_map
     return prob_map
-
+def generate_probs_from_bench(step):
+    past_map = np.load("benchmarks//"+str(step)+".npy")
+    prob_map = np.zeros_like(past_map)
+    prob_map = prob_map.astype(np.float32)
+    for s in range(5):
+        new_map = np.load("benchmarks//"+str(s+1+step)+".npy")
+        prob_map[(past_map == 0) & (new_map == 1)] = 1/(s+1)
+        past_map = new_map
+    return prob_map
 def square_state(mp, x, y):
     return mp[y][x]
 
