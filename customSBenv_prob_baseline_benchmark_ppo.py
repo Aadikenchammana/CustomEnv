@@ -255,6 +255,7 @@ def calc_preset_start(self):
 def generate_benchmarks(cfg,simulation_steps_per_timestep,total_steps_per_episode):
     sim = simfire.sim.simulation.FireSimulation(cfg)
     sim.reset()
+    fire_map, fire_status = run_simulation_ob(sim, 2)
     step = 0
     while True:
         if step%simulation_steps_per_timestep == 0:
@@ -286,7 +287,7 @@ class CustomEnv(gym.Env):
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
         self.screen_size = self.config.area.screen_size[0]
         self.prob_map = np.zeros_like(self.sim.fire_map)
-        self.fire_map = self.sim.fire_map
+        self.fire_map, self.fire_status = run_one_simulation_step(self, 2)
         self.agent_x = 10
         self.agent_y = 10
         self.agent_start = [10,10]
