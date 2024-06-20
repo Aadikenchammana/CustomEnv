@@ -363,7 +363,7 @@ class CustomEnv(gym.Env):
         if self.agent_y < 0:
             self.agent_y = 0 #self.agent_start[1]
         
-        if action_str == "fireline":
+        if action_str == "fireline" and square_state(self.fire_map, self.agent_x,self.agent_y) != 1:
             self.sim.update_mitigation([(self.agent_x,self.agent_y,BurnStatus.FIRELINE)])
         
         if self.autoplace:
@@ -386,9 +386,9 @@ class CustomEnv(gym.Env):
             truncated = False
         reward = get_reward_bench(self.fire_map, self.prob_map,self.episode_steps)#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
         if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
-            reward -= 5
+            reward -= 100
         elif square_state(self.fire_map, self.agent_x,self.agent_y) == 2:
-            reward -= 2
+            reward -= 5
 
         with open(self.analytics_dir+"//customLog.txt","a") as f:
             f.write("\n REWARD CALCULATED, "+str(reward)+","+str(get_burned(self.fire_map))+","+str(get_burning(self.fire_map))+","+str(get_unburned(self.fire_map)))
