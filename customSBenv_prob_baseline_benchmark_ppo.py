@@ -366,7 +366,7 @@ class CustomEnv(gym.Env):
         if action_str == "fireline":
             self.sim.update_mitigation([(self.agent_x,self.agent_y,BurnStatus.FIRELINE)])
         
-        if self.autoplace and False:
+        if self.autoplace:
             self.sim.update_mitigation([(self.agent_x,self.agent_y,BurnStatus.FIRELINE)])
 
         if self.episode_steps%self.simulation_steps_per_timestep == 0:
