@@ -115,14 +115,14 @@ def get_reward_l2_acc(self, target="fire", atarget = "fire"):
     return -10*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 2*dist - 10*(v3)
     
 def get_reward_bench(mp, pmp, step,target="fire"):
-    mp_total = get_burned(mp)+get_burning(mp)
+    mp_total = get_burned(mp)+get_burning(mp)+get_mitigated(mp)
     bmp = np.load("benchmarks//"+str(step)+".npy")
     bmp_total =  get_burned(bmp)+get_burning(bmp)
 
     pmp_total = np.sum(pmp)
     bpmp = generate_probs_from_bench(step)
     bpmp_total = np.sum(bpmp)
-    return (bmp_total-mp_total) + (bpmp_total-pmp_total)
+    return (bmp_total-mp_total) + (bpmp_total-pmp_total) - 0.5*step
 
 
 def run_one_simulation_step(self, total_updates):
