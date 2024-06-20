@@ -122,7 +122,7 @@ def get_reward_bench(mp, pmp, step,target="fire"):
     pmp_total = np.sum(pmp)
     bpmp = generate_probs_from_bench(step)
     bpmp_total = np.sum(bpmp)
-    return (bmp_total-mp_total) + (bpmp_total-pmp_total) - 0.5*step
+    return (bmp_total-mp_total) + (bpmp_total-pmp_total) - 0.3*step
 
 
 def run_one_simulation_step(self, total_updates):
