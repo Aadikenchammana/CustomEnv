@@ -282,7 +282,7 @@ class CustomEnv(gym.Env):
         self.preset_fires_starts = [(5,5),(22,5),(22,22),(5,22),(13,13),(5,13),(13,5), (22,13), (13, 22)]
         self.preset_fires_index = 0
         self.config.fire.fire_initial_position, self.preset_fires_index = calc_preset_start(self) #calc_random_start(self.config.area.screen_size[0])
-        self.config.fire.fire_initial_position = (13,5)
+        #self.config.fire.fire_initial_position = (13,5)
         print(self.config.fire.fire_initial_position)
         
         
@@ -420,8 +420,8 @@ class CustomEnv(gym.Env):
             os.mkdir(self.chkpt_dir)
         if self.episode_num%self.episodes_per_fire_restart == 0:
             self.config.fire.fire_initial_position, self.preset_fires_index = calc_preset_start(self) #calc_random_start(self.config.area.screen_size[0])
-            self.config.fire.fire_initial_position = (13,22)
-        generate_benchmarks(self.config,self.simulation_steps_per_timestep,self.total_steps_per_episode)
+            #self.config.fire.fire_initial_position = (13,22)
+            generate_benchmarks(self.config,self.simulation_steps_per_timestep,self.total_steps_per_episode)
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
         self.sim.reset()
         self.fire_map, self.fire_status = run_one_simulation_step(self, 2)
