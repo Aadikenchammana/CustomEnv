@@ -118,13 +118,11 @@ def get_reward_bench(mp, pmp, step,target="fire"):
     mp_total = get_burned(mp)+get_burning(mp)+get_mitigated(mp)
     bmp = np.load("benchmarks//"+str(step)+".npy")
     bmp_total =  get_burned(bmp)+get_burning(bmp)
-    emp = np.load("benchmarks//605.npy")
-    emp_total =  get_burned(emp)+get_burning(emp)
 
     pmp_total = np.sum(pmp)
     bpmp = generate_probs_from_bench(step)
     bpmp_total = np.sum(bpmp)
-    return (bmp_total-mp_total)/emp_total
+    return (bmp_total-mp_total) + (bpmp_total-pmp_total)
 
 
 def run_one_simulation_step(self, total_updates):
