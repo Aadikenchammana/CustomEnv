@@ -114,9 +114,16 @@ def get_reward_l2_acc(self, target="fire", atarget = "fire"):
 
     return -10*(get_burning(self.fire_map)+get_burned(self.fire_map))/get_total(self.fire_map) - 2*dist - 10*(v3)
     
-def get_reward_bench(mp, pmp, step,target="fire"):
+def get_reward_bench(mp, prev_mp,pmp, step,target="fire"):
     mp_total = get_burned(mp)+get_burning(mp)+get_mitigated(mp)
+    prev_mp_total = get_burned(prev_mp)+get_burning(prev_mp)+get_mitigated(prev_mp)
     bmp = np.load("benchmarks//"+str(step)+".npy")
+    if step > 0:
+        p_bmp = np.load("benchmarks//"+str(step-1)+".npy")
+    else:
+        p_bmp = np.load("benchmarks//"+str(step)+".npy")
+    p_bmp_total = get_burned(p_bmp)+get_burning(p_bmp)+get_mitigated(p_bmp)
+
     bmp_total =  get_burned(bmp)+get_burning(bmp)
     emp = np.load("benchmarks//605.npy")
     emp_total =  get_burned(emp)+get_burning(emp)
@@ -124,7 +131,11 @@ def get_reward_bench(mp, pmp, step,target="fire"):
     pmp_total = np.sum(pmp)
     bpmp = generate_probs_from_bench(step)
     bpmp_total = np.sum(bpmp)
-    return (bmp_total-mp_total)/emp_total
+    if bpmp_total == 0:
+        p = 0
+    else:
+        p = (bpmp_total-pmp_total)/bpmp_total
+    return ((bmp_total-p_bmp_total)-(mp_total-prev_mp_total))/emp_total #+ 0.1*p
 
 
 def run_one_simulation_step(self, total_updates):
@@ -337,7 +348,7 @@ class CustomEnv(gym.Env):
             self.action_space = spaces.Discrete(n_actions)
             self.action_names = ["up","down","left","right","fireline"]
         n_channel = 2
-        self.observation_space = spaces.Box(low=0, high=5,shape=(n_channel, self.screen_size, self.screen_size), dtype=np.float32)
+        self.observation_space = spaces.Dict({'burn_status': spaces.Box(low=0, high=5, shape=(1, self.screen_size, self.screen_size), dtype=np.float32),'burn_risk': spaces.Box(low=0, high=1.0, shape=(1, self.screen_size, self.screen_size), dtype=np.float32)})
 
 
     def step(self, action):
@@ -378,7 +389,7 @@ class CustomEnv(gym.Env):
 
 
         observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
-        self.observation = observation_map[newaxis,:,:]
+        self.observation = {'burn_status': self.fire_map,'burn_risk': self.prob_map}
         terminated = False
         truncated = False
         if self.episode_steps > self.total_steps_per_episode:
@@ -386,7 +397,7 @@ class CustomEnv(gym.Env):
         if get_burning(self.fire_map) == 0 or not self.fire_status:
             terminated = True
             truncated = False
-        reward = get_reward_bench(self.fire_map, self.prob_map,self.episode_steps)#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
+        reward = get_reward_bench(self.fire_map, self.prev_map,self.prob_map,self.episode_steps)#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
         if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
             reward -= 100
         elif square_state(self.fire_map, self.agent_x,self.agent_y) == 2:
@@ -427,7 +438,7 @@ class CustomEnv(gym.Env):
         self.fire_map, self.fire_status = run_one_simulation_step(self, 2)
         self.prob_map = np.zeros_like(self.fire_map)
         observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
-        self.observation_return = observation_map[newaxis,:,:]
+        self.observation = {'burn_status': self.fire_map,'burn_risk': self.prob_map}
         self.episode_steps = 0
         self.agent_x = self.agent_start[0]
         self.agent_y = self.agent_start[1]
@@ -447,7 +458,7 @@ class CustomEnv(gym.Env):
             f.write("\n NEW TRAINING ITERATION CREATION")
 
         info = {}
-        return self.observation_return, info
+        return self.observation, info
     
 
     def render(self):
@@ -465,7 +476,7 @@ if False:
     quit()
 # Instantiate the agent
 #model = DQN("MlpPolicy", env, verbose=1)
-model = PPO('MlpPolicy', env, verbose=1)
+model = PPO('MultiInputPolicy', env, verbose=1)
 save_path = 'saved_models//'+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
 os.mkdir(save_path)
 save_path += "//"
