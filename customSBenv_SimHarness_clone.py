@@ -420,7 +420,7 @@ class CustomEnv(gym.Env):
         self.sim.reset()
         self.fire_map, self.fire_status = run_one_simulation_step(self, 2)
         self.prob_map = np.zeros_like(self.fire_map)
-        observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
+        observation_map = self.fire_map
         self.observation_return = observation_map[newaxis,:,:]
         self.episode_steps = 0
         self.agent_x = self.agent_start[0]
