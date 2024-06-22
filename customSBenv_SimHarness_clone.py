@@ -118,11 +118,13 @@ def get_reward_bench(mp, pmp, step,target="fire"):
     mp_total = get_burned(mp)+get_burning(mp)+get_mitigated(mp)
     bmp = np.load("benchmarks//"+str(step)+".npy")
     bmp_total =  get_burned(bmp)+get_burning(bmp)
+    emp = np.load("benchmarks//605.npy")
+    emp_total =  get_burned(emp)+get_burning(emp)
 
     pmp_total = np.sum(pmp)
     bpmp = generate_probs_from_bench(step)
     bpmp_total = np.sum(bpmp)
-    return (bmp_total-mp_total) + (bpmp_total-pmp_total)
+    return (bmp_total-mp_total)/emp_total
 
 
 def run_one_simulation_step(self, total_updates):
@@ -280,7 +282,7 @@ class CustomEnv(gym.Env):
         self.preset_fires_starts = [(5,5),(22,5),(22,22),(5,22),(13,13),(5,13),(13,5), (22,13), (13, 22)]
         self.preset_fires_index = 0
         self.config.fire.fire_initial_position, self.preset_fires_index = calc_preset_start(self) #calc_random_start(self.config.area.screen_size[0])
-        self.config.fire.fire_initial_position = (13,5)
+        #self.config.fire.fire_initial_position = (13,5)
         print(self.config.fire.fire_initial_position)
         
         
@@ -298,7 +300,7 @@ class CustomEnv(gym.Env):
         self.chkpt_thresh = 100
         self.simulation_steps_per_timestep = 8
         self.episode_num = 0
-        self.autoplace = True
+        self.autoplace = False
         generate_benchmarks(self.config,self.simulation_steps_per_timestep,self.total_steps_per_episode)
 
         self.prev_map = copy.deepcopy(self.fire_map)
@@ -334,7 +336,7 @@ class CustomEnv(gym.Env):
             n_actions = 5
             self.action_space = spaces.Discrete(n_actions)
             self.action_names = ["up","down","left","right","fireline"]
-        n_channel = 2
+        n_channel = 1
         self.observation_space = spaces.Box(low=0, high=5,shape=(n_channel, self.screen_size, self.screen_size), dtype=np.float32)
 
 
@@ -372,11 +374,9 @@ class CustomEnv(gym.Env):
         if self.episode_steps%self.simulation_steps_per_timestep == 0:
             self.fire_map, self.fire_status = run_one_simulation_step(self, self.updates_per_step)
         self.fire_map = self.sim.fire_map
-        self.prob_map = generate_probabilities(self,5)
 
 
-        observation_map = np.stack((self.fire_map, self.prob_map), axis=0)
-        self.observation = observation_map[newaxis,:,:]
+        self.observation = self.fire_map
         terminated = False
         truncated = False
         if self.episode_steps > self.total_steps_per_episode:
@@ -385,10 +385,6 @@ class CustomEnv(gym.Env):
             terminated = True
             truncated = False
         reward = get_reward_bench(self.fire_map, self.prob_map,self.episode_steps)#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
-        if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
-            reward -= 100
-        elif square_state(self.fire_map, self.agent_x,self.agent_y) == 2:
-            reward -= 5
 
         with open(self.analytics_dir+"//customLog.txt","a") as f:
             f.write("\n REWARD CALCULATED, "+str(reward)+","+str(get_burned(self.fire_map))+","+str(get_burning(self.fire_map))+","+str(get_unburned(self.fire_map)))
@@ -418,8 +414,8 @@ class CustomEnv(gym.Env):
             os.mkdir(self.chkpt_dir)
         if self.episode_num%self.episodes_per_fire_restart == 0:
             self.config.fire.fire_initial_position, self.preset_fires_index = calc_preset_start(self) #calc_random_start(self.config.area.screen_size[0])
-            self.config.fire.fire_initial_position = (13,22)
-        generate_benchmarks(self.config,self.simulation_steps_per_timestep,self.total_steps_per_episode)
+            #self.config.fire.fire_initial_position = (13,22)
+            generate_benchmarks(self.config,self.simulation_steps_per_timestep,self.total_steps_per_episode)
         self.sim = simfire.sim.simulation.FireSimulation(self.config)
         self.sim.reset()
         self.fire_map, self.fire_status = run_one_simulation_step(self, 2)
@@ -462,8 +458,7 @@ if False:
     check_env(env)
     quit()
 # Instantiate the agent
-#model = DQN("MlpPolicy", env, verbose=1)
-model = PPO('MlpPolicy', env, verbose=1)
+model = DQN("MlpPolicy", env, verbose=1)
 save_path = 'saved_models//'+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
 os.mkdir(save_path)
 save_path += "//"
