@@ -135,7 +135,7 @@ def get_reward_bench(mp, prev_mp,pmp, step,target="fire"):
         p = 0
     else:
         p = (bpmp_total-pmp_total)/bpmp_total
-    return ((bmp_total-p_bmp_total)-(mp_total-prev_mp_total))/emp_total #+ 0.1*p
+    return ((bmp_total)-(mp_total))/emp_total #+ 0.1*p
 
 
 def run_one_simulation_step(self, total_updates):
