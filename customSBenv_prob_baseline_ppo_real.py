@@ -306,10 +306,10 @@ class CustomEnv(gym.Env):
         if self.agent_y < 0:
             self.agent_y = 0 #self.agent_start[1]
         
-        if action_str == "fireline" and (square_state(self.fire_map, self.agent_x,self.agent_y) == 2 or square_state(self.fire_map, self.agent_x,self.agent_y) == 1):
+        if action_str == "fireline" and not(square_state(self.fire_map, self.agent_x,self.agent_y) == 2 or square_state(self.fire_map, self.agent_x,self.agent_y) == 1):
             self.sim.update_mitigation([(self.agent_x,self.agent_y,BurnStatus.FIRELINE)])
         
-        if self.autoplace and (square_state(self.fire_map, self.agent_x,self.agent_y) == 2 or square_state(self.fire_map, self.agent_x,self.agent_y) == 1):
+        if self.autoplace and not(square_state(self.fire_map, self.agent_x,self.agent_y) == 2 or square_state(self.fire_map, self.agent_x,self.agent_y) == 1):
             self.sim.update_mitigation([(self.agent_x,self.agent_y,BurnStatus.FIRELINE)])
 
         if self.episode_steps%self.simulation_steps_per_timestep == 0:
