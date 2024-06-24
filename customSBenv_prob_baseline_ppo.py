@@ -383,7 +383,7 @@ class CustomEnv(gym.Env):
         with open(self.analytics_dir+"//rewardLog.txt","a") as f:
             f.write("\n NEW TRAINING ITERATION CREATION")
 
-        info = {}
+        info = {}  
         return self.observation_return, info
     
 
@@ -401,9 +401,9 @@ if False:
     check_env(env)
     quit()
 #model = DQN("MlpPolicy", env, verbose=1)
-model = PPO('MlpPolicy', env, verbose=1)
-#model_path = 'previous_models//PBP_8000000.zip'
-#model = PPO.load(model_path, env=env)
+#model = PPO('MlpPolicy', env, verbose=1)
+model_path = 'previous_models//PBP_8000000.zip'
+model = PPO.load(model_path, env=env)
 save_path = 'saved_models//'+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
 os.mkdir(save_path)
 save_path += "//"
