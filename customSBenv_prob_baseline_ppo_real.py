@@ -406,7 +406,7 @@ if False:
     quit()
 # Instantiate the agent
 #model = DQN("MlpPolicy", env, verbose=1)
-model_path = 'previous_models//mip_ppo_simple+l2_weights.zip'#'previous_models//PBP_2_7990000.zip'
+model_path = 'previous_models//PBP_2_7990000.zip'
 #model_path = 'previous_models//PBP_2_7990000.zip'
 model = PPO.load(model_path, env=env)
 #model = PPO('MlpPolicy', env, verbose=1)
