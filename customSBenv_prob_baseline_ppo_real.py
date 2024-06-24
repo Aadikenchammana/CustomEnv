@@ -285,6 +285,7 @@ class CustomEnv(gym.Env):
         self.episode_steps += 1
         action_str = self.action_names[action]
         action_multiplier = 1
+        px,py = self.agent_x,self.agent_y
 
         with open(self.analytics_dir+"//customLog.txt","a") as f:
             f.write("\n ACTION PREFORMED, "+action_str+","+str(self.agent_x)+","+str(self.agent_y))
@@ -305,6 +306,9 @@ class CustomEnv(gym.Env):
             self.agent_x = 0 #self.agent_start[0]
         if self.agent_y < 0:
             self.agent_y = 0 #self.agent_start[1]
+
+        if (square_state(self.fire_map, self.agent_x,self.agent_y) == 2 or square_state(self.fire_map, self.agent_x,self.agent_y) == 1):
+            self.agent_x,self.agent_y = px,py
         
         if action_str == "fireline" and not(square_state(self.fire_map, self.agent_x,self.agent_y) == 2 or square_state(self.fire_map, self.agent_x,self.agent_y) == 1):
             self.sim.update_mitigation([(self.agent_x,self.agent_y,BurnStatus.FIRELINE)])
