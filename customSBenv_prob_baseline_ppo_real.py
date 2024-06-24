@@ -234,7 +234,7 @@ class CustomEnv(gym.Env):
         self.fire_map = self.sim.fire_map
         self.agent_x = 10
         self.agent_y = 10
-        self.agent_start = [12,12]
+        self.agent_start = [14,14]
         self.episode_steps = 0
         self.updates_per_step = 1
         self.total_steps_per_episode = 600
