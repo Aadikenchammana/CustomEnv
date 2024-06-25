@@ -27,7 +27,7 @@ operational:
   seed:
   latitude:  33.8582 # top left corner
   longitude: -110.7352 # top left corner
-  height: 14000  #20000 # in meters36900
+  height: 9000  #20000 # in meters36900
   width: 9000 #20000 # in meters
   resolution: 30 # in meters
   year: 2020
