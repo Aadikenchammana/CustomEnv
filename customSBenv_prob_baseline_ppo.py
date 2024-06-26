@@ -325,7 +325,7 @@ class CustomEnv(gym.Env):
         if get_burning(self.fire_map) == 0 or not self.fire_status:
             terminated = True
             truncated = False
-        reward = get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
+        reward = get_reward_l2_acc(self, target="fire", atarget = "fire")#get_reward_l2(self.fire_map, self.prob_map, self.agent_x, self.agent_y, target="prob")#get_reward(self.fire_map)
         if square_state(self.fire_map, self.agent_x,self.agent_y) == 1:
             reward -= 5
         elif square_state(self.fire_map, self.agent_x,self.agent_y) == 2:
@@ -400,8 +400,8 @@ env = CustomEnv()
 if False:
     check_env(env)
     quit()
-#model = DQN("MlpPolicy", env, verbose=1)
-model = PPO('MlpPolicy', env, verbose=1)
+model = DQN("MlpPolicy", env, verbose=1)
+#model = PPO('MlpPolicy', env, verbose=1)
 """model_path = 'previous_models//PBP_8000000.zip'
 model = PPO.load(model_path, env=env)"""
 save_path = 'saved_models//'+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
