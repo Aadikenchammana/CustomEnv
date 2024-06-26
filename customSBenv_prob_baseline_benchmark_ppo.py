@@ -464,10 +464,12 @@ if False:
     check_env(env)
     quit()
 # Instantiate the agent
-#model = DQN("MlpPolicy", env, verbose=1)
+model = DQN("MlpPolicy", env, verbose=1)
 #model = PPO('MlpPolicy', env, verbose=1)
+
 model_path = 'previous_models//og_ppo_bench_weights.zip'
-model = PPO.load(model_path, env=env)
+#model = PPO.load(model_path, env=env)
+
 save_path = 'saved_models//'+datetime.now().strftime("%m.%d.%Y_%H:%M:%S")
 os.mkdir(save_path)
 save_path += "//"
